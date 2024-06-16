@@ -20,26 +20,28 @@ def YOLO2EasyDL(name, x, y, w, h, pixelX, pixelY):
         'height': h
     }
 
-#直接输入predict()的result,返回可直接上传的labels
-def result2labels(result):
+
+# 直接输入predict()的result的item,返回可直接上传的labels
+def item2labels(item):
     labels = []
-    for item in result:
-        boxes = item.boxes.xywh
-        names = item.boxes.cls
-        for name, box in names, boxes:
-            x, y, w, h = box
-            x, y, w, h = x.item(), y.item(), w.item(), h.item()
-            left = x - w // 2
-            top = y - h // 2
-            labels.append(
-                {
-                    'label_name': name,
-                    'left': left,
-                    'top': top,
-                    'width': w,
-                    'height': h
-                }
-            )
+    boxes = item.boxes.xywh
+    names = item.boxes.cls
+    for name, box in zip(names, boxes):
+        x, y, w, h = box
+        x, y, w, h = x.item(), y.item(), w.item(), h.item()
+        left = x - w // 2
+        top = y - h // 2
+        name = str(int(name.item()))
+        labels.append(
+            {
+                'label_name': name,
+                'left': left,
+                'top': top,
+                'width': w,
+                'height': h
+            }
+        )
+    return labels
 
 
 class EasyDL:
