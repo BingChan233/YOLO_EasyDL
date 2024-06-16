@@ -2,10 +2,10 @@ import requests
 import json
 import base64
 from io import BytesIO
-from PIL import Image
+
 
 # 输入标签名称,YOLO格式的数据,图片宽高,转换成label对象,放入list中上传
-def YOLO2EasyDL(name,x, y, w, h, pixelX, pixelY):
+def YOLO2EasyDL(name, x, y, w, h, pixelX, pixelY):
     w = w * pixelX
     h = h * pixelY
     x = x * pixelX
@@ -19,6 +19,27 @@ def YOLO2EasyDL(name,x, y, w, h, pixelX, pixelY):
         'width': w,
         'height': h
     }
+
+#直接输入predict()的result,返回可直接上传的labels
+def result2labels(result):
+    labels = []
+    for item in result:
+        boxes = item.boxes.xywh
+        names = item.boxes.cls
+        for name, box in names, boxes:
+            x, y, w, h = box
+            x, y, w, h = x.item(), y.item(), w.item(), h.item()
+            left = x - w // 2
+            top = y - h // 2
+            labels.append(
+                {
+                    'label_name': name,
+                    'left': left,
+                    'top': top,
+                    'width': w,
+                    'height': h
+                }
+            )
 
 
 class EasyDL:
